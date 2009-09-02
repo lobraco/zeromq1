@@ -98,7 +98,7 @@ namespace zmq
         ZMQ_EXPORT void consume (int queue_id_, bool enabled_);
 
         //  Binds an exchange to a queue.
-        ZMQ_EXPORT void bind (const char *exchange_name_,
+        ZMQ_EXPORT int bind (const char *exchange_name_,
             const char *queue_name_, i_thread *exchange_thread_,
             i_thread *queue_thread_, const char *exchange_options_ = NULL,
             const char *queue_options_ = NULL);

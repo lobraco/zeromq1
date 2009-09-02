@@ -50,7 +50,7 @@ namespace zmq
             int64_t lwm = no_limit,
             int64_t swap = no_swap);
         void consume (int queue_id, bool enabled);
-        void bind (
+        int bind (
             const char *exchange_name,
             const char *queue_name,
             poll_thread_t *exchange_thread,
@@ -134,7 +134,7 @@ to the bound queues.
 means that each message is sent to all the bound queues.
 .IR style_load_balancing
 means that each message is sent to exactly one queue. Messages are distributed
-among the queues in round-robin fashion.
+among the queues in round-robin fashion. Function returns -1 in the case of error.
 .IP "\fBint create_queue (const char *name, scope_t scope = scope_local, const char *location = NULL, poll_thread_t *listener_thread = NULL, int handler_thread_count = 0, poll_thread_t **handler_threads = NULL, int64_t hwm = no_limit, int64_t lwm = no_limit, int64_t swap = no_swap)\fP
 Creates a queue. The name of the queue to create is specified by the
 .IR name
@@ -186,14 +186,14 @@ If
 is set to
 .IR no_limit
 .IR lwm
-paramter is ignored.
+paramter is ignored. Function returns -1 in the case of error.
 .IP "\fBvoid consume (int queue_id, bool enabled)\fP
 Enable / disable receiving messages from queue specified by
 .IR queue_id,
 returned from
 .IR create_queue
 call. Consuming of the messages is enabled by the default.
-.IP "\fBvoid bind (const char *exchange_name, const char *queue_name, poll_thread_t *exchange_thread, poll_thread_t *queue_thread, const char *exchange_options = NULL, const char *queue_options = NULL)\fP
+.IP "\fBint bind (const char *exchange_name, const char *queue_name, poll_thread_t *exchange_thread, poll_thread_t *queue_thread, const char *exchange_options = NULL, const char *queue_options = NULL)\fP
 Binds the queue specified by
 .IR queue_name
 to the exchange specified by
@@ -214,7 +214,8 @@ traffic.
 and
 .IR queue_options
 can contain additional information passed to exchange and queue engine.
-Interpretation of these strings is dependent on the transport mechanism used.
+Interpretation of these strings is dependent on the transport mechanism used. 
+Function returns -1 in the case of error.
 .IP "\fBvoid send (int exchange, message_t &message)\fP
 Sends a message to exchange specified by the
 .IR exchange

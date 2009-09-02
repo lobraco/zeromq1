@@ -41,8 +41,8 @@ namespace zmq
         //  Destroys the locator.
         ZMQ_EXPORT ~locator_t ();
 
-        void register_endpoint (const char *name_, attr_list_t &attrs_);
-        void resolve_endpoint (const char *name_, attr_list_t &attrs_);
+        bool register_endpoint (const char *name_, attr_list_t &attrs_);
+        bool resolve_endpoint (const char *name_, attr_list_t &attrs_);
 
     private:
 

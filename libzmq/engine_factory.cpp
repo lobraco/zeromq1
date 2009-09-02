@@ -80,7 +80,6 @@ zmq::i_engine *zmq::engine_factory_t::create_listener (
 #endif
 
     //  Unknown transport type.
-    assert (false);
     return NULL;
 }
 
@@ -148,6 +147,5 @@ zmq::i_engine *zmq::engine_factory_t::create_engine (
 #endif
 
     //  Unknown transport type.
-    assert (false);
     return NULL;
 }

@@ -68,8 +68,10 @@ int zmq::api_thread_t::create_exchange (const char *name_,
     //  Insert the exchange to the local list of exchanges.
     //  Make sure that the exchange doesn't already exist.
     for (exchanges_t::iterator it = exchanges.begin ();
-          it != exchanges.end (); it ++)
-        assert (it->first != name_);
+          it != exchanges.end (); it ++) {
+      if (it->first == name_)
+        return -1;
+    }
 
     out_engine_t *engine = out_engine_t::create (
         style_ == style_load_balancing);
@@ -81,9 +83,10 @@ int zmq::api_thread_t::create_exchange (const char *name_,
         return exchanges.size () - 1;
 
     //  Register the exchange with the locator.
-    dispatcher->create (locator, this, false, name_, this, engine,
-        scope_, location_, listener_thread_,
-        handler_thread_count_, handler_threads_);
+    if (!dispatcher->create (locator, this, false, name_, this, engine,
+          scope_, location_, listener_thread_,
+          handler_thread_count_, handler_threads_))
+        return -1;
 
     return exchanges.size () - 1;
 }
@@ -99,8 +102,10 @@ int zmq::api_thread_t::create_queue (const char *name_, scope_t scope_,
     //  Insert the queue to the local list of queues.
     //  Make sure that the queue doesn't already exist.
     for (queues_t::iterator it = queues.begin ();
-          it != queues.end (); it ++)
-        assert (it->name != name_);
+          it != queues.end (); it ++) {
+        if (it->name == name_)
+            return -1;
+    }
 
     in_engine_t *engine = in_engine_t::create (hwm_, lwm_, swap_);
 
@@ -114,9 +119,10 @@ int zmq::api_thread_t::create_queue (const char *name_, scope_t scope_,
         return queues.size ();
 
     //  Register the queue with the locator.
-    dispatcher->create (locator, this, true, name_, this, engine,
-        scope_, location_, listener_thread_, handler_thread_count_,
-        handler_threads_);
+    if (!dispatcher->create (locator, this, true, name_, this, engine,
+          scope_, location_, listener_thread_, handler_thread_count_,
+          handler_threads_))
+        return -1;
 
     return queues.size ();
 }
@@ -127,7 +133,7 @@ void zmq::api_thread_t::consume (int queue_id_, bool enabled_)
     queues [queue_id_ - 1].consume = enabled_;
 }
 
-void zmq::api_thread_t::bind (const char *exchange_name_,
+int zmq::api_thread_t::bind (const char *exchange_name_,
     const char *queue_name_, i_thread *exchange_thread_,
     i_thread *queue_thread_, const char *exchange_options_,
     const char *queue_options_)
@@ -142,10 +148,10 @@ void zmq::api_thread_t::bind (const char *exchange_name_,
     if (eit != exchanges.end ()) {
         exchange_thread = this;
         exchange_engine = eit->second;
-    }
-    else {
-        dispatcher->get (locator, this, exchange_name_, &exchange_thread,
-            &exchange_engine, exchange_thread_, queue_name_, exchange_options_);
+    } else {
+        if (!dispatcher->get (locator, this, exchange_name_, &exchange_thread,
+              &exchange_engine, exchange_thread_, queue_name_, exchange_options_))
+            return -1;
     }
 
     //  Find the queue.
@@ -158,10 +164,10 @@ void zmq::api_thread_t::bind (const char *exchange_name_,
     if (qit != queues.end ()) {
         queue_thread = this;
         queue_engine = qit->engine;
-    }
-    else {
-        dispatcher->get (locator, this, queue_name_, &queue_thread,
-            &queue_engine, queue_thread_, exchange_name_, queue_options_);
+    } else {
+        if (!dispatcher->get (locator, this, queue_name_, &queue_thread,
+              &queue_engine, queue_thread_, exchange_name_, queue_options_))
+            return -1;
     }
 
     //  Create the pipe.
@@ -178,6 +184,8 @@ void zmq::api_thread_t::bind (const char *exchange_name_,
     command_t cmd_receive_from;
     cmd_receive_from.init_engine_receive_from (queue_engine, pipe);
     send_command (queue_thread, cmd_receive_from);
+
+    return 0;
 }
 
 bool zmq::api_thread_t::send (int exchange_, message_t &message_, bool block_)

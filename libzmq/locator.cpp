@@ -52,7 +52,7 @@ zmq::locator_t::~locator_t ()
         delete global_locator;
 }
 
-void zmq::locator_t::register_endpoint (const char *name_, attr_list_t &attrs_)
+bool zmq::locator_t::register_endpoint (const char *name_, attr_list_t &attrs_)
 {
     //  If 0MQ is used for in-process messaging, we shouldn't even get here.
     assert (global_locator);
@@ -88,10 +88,15 @@ void zmq::locator_t::register_endpoint (const char *name_, attr_list_t &attrs_)
 
     //  Read the response.
     global_locator->read (&cmd, 1);
-    assert (cmd == create_ok_id);
+
+    //  Could not register global object.
+    if (cmd != create_ok_id)
+        return false;
+
+    return true;
 }
 
-void zmq::locator_t::resolve_endpoint (const char *name_, attr_list_t &attrs_)
+bool zmq::locator_t::resolve_endpoint (const char *name_, attr_list_t &attrs_)
 {
     //  If 0MQ is used for in-process messaging, we shouldn't even get here.
     assert (global_locator);
@@ -105,7 +110,10 @@ void zmq::locator_t::resolve_endpoint (const char *name_, attr_list_t &attrs_)
 
     //  Read the response.
     global_locator->read (&cmd, 1);
-    assert (cmd == get_ok_id);
+
+    //  If global object is not registered return false.
+    if (cmd != get_ok_id)
+        return false;
 
     //  Read attributes.
     global_locator->read (&size, 1);
@@ -120,4 +128,6 @@ void zmq::locator_t::resolve_endpoint (const char *name_, attr_list_t &attrs_)
         attrs_ [key] = value;
         global_locator->read (&size, 1);
     }
+
+    return true;
 }

@@ -99,7 +99,7 @@ int zmq::dispatcher_t::allocate_thread_id (i_thread *thread_,
     return thread_id;
 }
 
-void zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
+bool zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
     bool source_, const char *object_, i_thread *thread_,
     i_engine *engine_, scope_t scope_, const char *location_,
     i_thread *listener_thread_, int handler_thread_count_,
@@ -121,7 +121,12 @@ void zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
         //  from the directory service.
         if (!location_ || strlen (location_) == 0) {
             attr_list_t attrs;
-            locator_->resolve_endpoint (object_, attrs);
+
+            if (!locator_->resolve_endpoint (object_, attrs)) {
+                sync.unlock ();
+                return false;
+            }
+ 
             attr_list_t::iterator it = attrs.find ("location");
             assert (it != attrs.end ());
             location_ = (*it).second.c_str ();
@@ -133,6 +138,11 @@ void zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
             handler_thread_count_, handler_threads_,
             source_, thread_, engine_, object_);
 
+        if (!listener) {
+            sync.unlock ();
+            return false;
+        }
+
         //  Register the object with the locator.
         attr_list_t attrs;
         attrs.insert (attr_list_t::value_type ("location",
@@ -143,11 +153,17 @@ void zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
                 engine_->load_balancing () ? "true" : "false"));
         }
 
-        locator_->register_endpoint (object_, attrs);
+        if (!locator_->register_endpoint (object_, attrs)) {
+            sync.unlock ();
+            return false;
+        }
+
     }
 
     //  Leave critical section.
     sync.unlock ();
+
+    return true;
 }
 
 bool zmq::dispatcher_t::get (i_locator *locator_, i_thread *calling_thread_,
@@ -168,7 +184,10 @@ bool zmq::dispatcher_t::get (i_locator *locator_, i_thread *calling_thread_,
 
         //  Get the location of the object from the locator.
         attr_list_t attrs;
-        locator_->resolve_endpoint (object_, attrs);
+        if (!locator_->resolve_endpoint (object_, attrs)) {
+            sync.unlock ();
+            return false;
+        }
 
         attr_list_t::iterator entry = attrs.find ("location");
         assert (entry != attrs.end ());
@@ -186,6 +205,11 @@ bool zmq::dispatcher_t::get (i_locator *locator_, i_thread *calling_thread_,
         i_engine *engine = engine_factory_t::create_engine (calling_thread_,
             handler_thread_, location, local_object_, load_balancing,
             engine_arguments_);
+
+        if (!engine) {
+            sync.unlock ();
+            return false;
+        }
 
         //  Write it into object repository.
         object_info_t info = {handler_thread_, engine};

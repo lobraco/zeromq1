@@ -92,7 +92,7 @@ namespace zmq
             i_signaler *signaler_);
 
         //  Creates object.
-        void create (i_locator *locator_, i_thread *calling_thread_, 
+        bool create (i_locator *locator_, i_thread *calling_thread_,
             bool source_, const char *object_, i_thread *thread_, 
             i_engine *engine_, scope_t scope_, const char *location_,
             i_thread *listener_thread_, int handler_thread_count_,

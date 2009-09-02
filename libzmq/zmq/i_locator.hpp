@@ -33,9 +33,9 @@ namespace zmq
     {
         virtual ~i_locator () {};
 
-        virtual void register_endpoint (const char *name_,
+        virtual bool register_endpoint (const char *name_,
             attr_list_t &attrs_) = 0;
-        virtual void resolve_endpoint (const char *name_,
+        virtual bool resolve_endpoint (const char *name_,
             attr_list_t &attrs_) = 0;
     };
 

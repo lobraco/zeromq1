@@ -49,22 +49,30 @@ namespace perf
                 exchange_id = api->create_exchange ("E_LOCAL",
                     zmq::scope_local, NULL, NULL, 0, NULL,
                     zmq::style_load_balancing);
-                api->bind ("E_LOCAL", queue_name_, worker, worker);
-                
+                assert (exchange_id != -1);
+
+                int rc = api->bind ("E_LOCAL", queue_name_, worker, worker);
+                assert (rc != -1);
+
                 //  Create & bind local queue.
-                api->create_queue ("Q_LOCAL");
-                api->bind (exchange_name_, "Q_LOCAL", worker, worker);
+                rc = api->create_queue ("Q_LOCAL");
+                assert (rc != -1);
+
+                rc = api->bind (exchange_name_, "Q_LOCAL", worker, worker);
+                assert (rc != -1);
 
             } else {
                 assert (exchange_interface_);
                 assert (queue_interface_);
                 
-                api->create_queue (queue_name_, zmq::scope_global,
+                int rc = api->create_queue (queue_name_, zmq::scope_global,
                     queue_interface_, worker, 1, &worker);
+                assert (rc != -1);
 
                 exchange_id = api->create_exchange (exchange_name_, 
                     zmq::scope_global, exchange_interface_, worker, 
                     1, &worker, zmq::style_load_balancing);
+                assert (exchange_id != -1);
             }
           
         }
