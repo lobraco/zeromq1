@@ -104,8 +104,9 @@ public class Zmq
      *   
      * @param exchangeName the exchange name.
      * @param queueName the queue name.
+     * @return -1 on error otherwise 0 is returned.
      */
-    public native void bind (String exchangeName, String queueName,
+    public native int bind (String exchangeName, String queueName,
         String exchangeOptions, String queueOptions);
 
     /**

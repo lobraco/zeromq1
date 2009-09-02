@@ -43,8 +43,11 @@ class j_remote_lat
          //  Create the wiring.
          int eid = obj.createExchange ("EG", Zmq.SCOPE_GLOBAL, outInterface, 
              Zmq.STYLE_LOAD_BALANCING);
-         obj.createQueue ("QG", Zmq.SCOPE_GLOBAL, inInterface,
+         assert (eid != -1);
+
+         int rc = obj.createQueue ("QG", Zmq.SCOPE_GLOBAL, inInterface,
              Zmq.NO_LIMIT, Zmq.NO_LIMIT, Zmq.NO_SWAP);
+         assert (rc != -1);
 
          //  Bounce the messages back to LocalLat
          for (int i = 0; i != roundtripCount; i ++) {

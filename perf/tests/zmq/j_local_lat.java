@@ -44,11 +44,18 @@ class j_local_lat
          //  Create the wiring.
          int eid = obj.createExchange ("EL", Zmq.SCOPE_LOCAL, null, 
 		Zmq.STYLE_LOAD_BALANCING);
-         obj.createQueue ("QL", Zmq.SCOPE_LOCAL, null, Zmq.NO_LIMIT,
+         assert (eid != -1);
+
+         int rc = obj.createQueue ("QL", Zmq.SCOPE_LOCAL, null, Zmq.NO_LIMIT,
              Zmq.NO_LIMIT, Zmq.NO_SWAP);
-         obj.bind ("EL", "QG", null, null);
-         obj.bind ("EG", "QL", null, null);
-         
+         assert (rc != -1);
+
+         rc = obj.bind ("EL", "QG", null, null);
+         assert (rc != -1);
+
+         rc = obj.bind ("EG", "QL", null, null);
+         assert (rc != -1);
+
          //  Get the inital timestamp.
          long start = System.currentTimeMillis ();
 

@@ -46,8 +46,9 @@ class j_local_thr
          Zmq obj = new Zmq (host);
 
          //  Create the wiring.
-         obj.createQueue ("QG", Zmq.SCOPE_GLOBAL, inInterface,
+         int rc = obj.createQueue ("QG", Zmq.SCOPE_GLOBAL, inInterface,
              Zmq.NO_LIMIT, Zmq.NO_LIMIT, Zmq.NO_SWAP);
+         assert (rc != -1);
 
          //  Receive the first message from RemoteThr.
          byte [] data = obj.receive (true).message;

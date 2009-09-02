@@ -182,7 +182,7 @@ JNIEXPORT jint JNICALL Java_org_zmq_Zmq_createQueue (JNIEnv *env, jobject obj,
     return qid;
 }
 
-JNIEXPORT void JNICALL Java_org_zmq_Zmq_bind (JNIEnv *env, jobject obj,
+JNIEXPORT jint JNICALL Java_org_zmq_Zmq_bind (JNIEnv *env, jobject obj,
     jstring exchangeName, jstring queueName, jstring exchangeOptions,
     jstring queueOptions)
 {
@@ -213,7 +213,7 @@ JNIEXPORT void JNICALL Java_org_zmq_Zmq_bind (JNIEnv *env, jobject obj,
         c_queue_options = (char*) env->GetStringUTFChars (queueOptions, 0);
 
     //  Forward the call.
-    context->api_thread->bind (c_exchange_name, c_queue_name,
+    jint rc = context->api_thread->bind (c_exchange_name, c_queue_name,
         context->io_thread, context->io_thread, c_exchange_options,
         c_queue_options);
 
@@ -224,6 +224,8 @@ JNIEXPORT void JNICALL Java_org_zmq_Zmq_bind (JNIEnv *env, jobject obj,
         env->ReleaseStringUTFChars (exchangeOptions, c_exchange_options);
     if (c_queue_options)
         env->ReleaseStringUTFChars (queueOptions, c_queue_options);
+
+    return rc;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_zmq_Zmq_send (JNIEnv *env, jobject obj,

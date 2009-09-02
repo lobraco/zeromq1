@@ -40,7 +40,10 @@ class j_remote_thr
          //  Create the wiring.
          int eid = obj.createExchange ("EL", Zmq.SCOPE_LOCAL, null,
              Zmq.STYLE_LOAD_BALANCING);
-         obj.bind ("EL", "QG", null, null);
+         assert (eid != -1);
+
+         int rc = obj.bind ("EL", "QG", null, null);
+         assert (rc != -1);
          
          //  Send the messages to LocalThr.
          for (int i = 0; i != messageCount; i ++) {
