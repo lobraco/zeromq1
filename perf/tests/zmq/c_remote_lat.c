@@ -44,7 +44,8 @@ int main (int argc, char *argv [])
     int counter;
     void *buf;
     uint64_t size;
-    
+    int rc;
+
     /*  Parse command line arguments.  */
     if (argc != 6) {
         printf ("usage: c_remote_lat <hostname> <in-interface> <out-interface> "
@@ -63,8 +64,11 @@ int main (int argc, char *argv [])
     /*  Create the wiring.  */
     eid = zmq_create_exchange (handle, "EG", ZMQ_SCOPE_GLOBAL, out_interface,
         ZMQ_STYLE_LOAD_BALANCING);
-    zmq_create_queue (handle, "QG", ZMQ_SCOPE_GLOBAL, in_interface,
+    assert (eid != -1);
+
+    rc = zmq_create_queue (handle, "QG", ZMQ_SCOPE_GLOBAL, in_interface,
         ZMQ_NO_LIMIT, ZMQ_NO_LIMIT, ZMQ_NO_SWAP);
+    assert (rc != -1);
 
     for (counter = 0; counter != roundtrip_count; counter ++) {
         zmq_receive (handle, &buf, &size, NULL, ZMQ_TRUE);

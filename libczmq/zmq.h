@@ -53,8 +53,8 @@ int ZMQ_EXPORT zmq_create_exchange (void *object_, const char *name_,
 int ZMQ_EXPORT zmq_create_queue (void *object_, const char *name_, int scope_,
     const char *location_, int64_t hwm_, int64_t lwm_, int64_t swap_);
 
-void ZMQ_EXPORT zmq_bind (void *object_, const char *exchange_name_, 
-    const char *queue_name_, const char *exchange_options_, 
+int ZMQ_EXPORT zmq_bind (void *object_, const char *exchange_name_,
+    const char *queue_name_, const char *exchange_options_,
     const char *queue_options_);
 
 int ZMQ_EXPORT zmq_send (void *object_, int exchange_, const void *data_,

@@ -39,7 +39,8 @@ int main (int argc, char *argv [])
     int eid;
     int counter;
     void *out_buf;
-    
+    int rc;
+
     /*  Parse command line arguments.  */
     if (argc != 4) {
         printf ("usage: c_remote_thr <hostname> <message-size> "
@@ -56,7 +57,10 @@ int main (int argc, char *argv [])
     /*  Create the wiring.  */
     eid = zmq_create_exchange (handle, "E", ZMQ_SCOPE_LOCAL, NULL,
         ZMQ_STYLE_LOAD_BALANCING);
-    zmq_bind (handle, "E", "Q", NULL, NULL);
+    assert (eid != -1);
+
+    rc = zmq_bind (handle, "E", "Q", NULL, NULL);
+    assert (rc != -1);
 
     /*  Create message data to send.  */
     out_buf = malloc (message_size);

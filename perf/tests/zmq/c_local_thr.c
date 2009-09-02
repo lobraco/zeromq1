@@ -89,7 +89,8 @@ int main (int argc, char *argv [])
     uint64_t end;
     uint64_t message_throughput;
     uint64_t megabit_throughput;
-        
+    int rc;
+
     /*  Parse command line arguments.  */
     if (argc != 5) {
         printf ("usage: c_local_thr <hostname> <in-interface> "
@@ -109,8 +110,9 @@ int main (int argc, char *argv [])
     handle = zmq_create (host);
 
     /*  Create the wiring.  */
-    zmq_create_queue (handle, "Q", ZMQ_SCOPE_GLOBAL, in_interface,
+    rc = zmq_create_queue (handle, "Q", ZMQ_SCOPE_GLOBAL, in_interface,
         ZMQ_NO_LIMIT, ZMQ_NO_LIMIT, ZMQ_NO_SWAP);
+    assert (rc != -1);
 
     /*  Receive first message.  */
     zmq_receive (handle, &buf, &size, NULL, ZMQ_TRUE);

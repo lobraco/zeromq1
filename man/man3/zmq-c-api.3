@@ -34,8 +34,8 @@ int zmq_create_exchange (void *object, const char *name,
 int zmq_create_queue (void *object, const char *name, int scope,
     const char *location, int64_t hwm, int64_t lwm, int64_t swap);
 
-void zmq_bind (void *object, const char *exchange_name, 
-    const char *queue_name, const char *exchange_options, 
+int zmq_bind (void *object, const char *exchange_name,
+    const char *queue_name, const char *exchange_options,
     const char *queue_options);
 
 int zmq_send (void *object, int exchange, void *data,
@@ -76,7 +76,7 @@ Same as
 function. For detailed description check
 .IR zmq::api_thread_t
 manual page.
-.IP "\fBvoid zmq_bind (void *object, const char *exchange_name, const char *queue_name, const char *exchange_options, const char *queue_options)\fP"
+.IP "\fBint zmq_bind (void *object, const char *exchange_name, const char *queue_name, const char *exchange_options, const char *queue_options)\fP"
 Same as
 .IR zmq::api_thread_t::bind
 function. For detailed description check

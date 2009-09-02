@@ -94,7 +94,7 @@ int zmq_create_queue (void *object_, const char *name_, int scope_,
         hwm_, lwm_, swap_);
 }
 
-void zmq_bind (void *object_, const char *exchange_name_,
+int zmq_bind (void *object_, const char *exchange_name_,
      const char *queue_name_, const char *exchange_options_,
      const char *queue_options_)
 {
@@ -102,7 +102,7 @@ void zmq_bind (void *object_, const char *exchange_name_,
     context_t *context = (context_t*) object_;
 
     //  Forward the call to native 0MQ library.
-    context->api_thread->bind (exchange_name_, queue_name_,
+    return context->api_thread->bind (exchange_name_, queue_name_,
         context->io_thread, context->io_thread,
         exchange_options_, queue_options_);
 }

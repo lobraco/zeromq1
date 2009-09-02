@@ -87,7 +87,8 @@ int main (int argc, char *argv [])
     uint64_t start;
     uint64_t end; 
     double latency;
-        
+    int rc;
+
     /*  Parse command line arguments.  */
     if (argc != 4) {
         printf ("usage: c_local_lat <hostname> <message-size> "
@@ -108,10 +109,17 @@ int main (int argc, char *argv [])
     /*  Create the wiring.  */
     eid = zmq_create_exchange (handle, "EL", ZMQ_SCOPE_LOCAL, NULL,
         ZMQ_STYLE_LOAD_BALANCING);
-    zmq_create_queue (handle, "QL", ZMQ_SCOPE_LOCAL, NULL,
+    assert (eid != -1);
+
+    rc = zmq_create_queue (handle, "QL", ZMQ_SCOPE_LOCAL, NULL,
         ZMQ_NO_LIMIT, ZMQ_NO_LIMIT, ZMQ_NO_SWAP);
-    zmq_bind (handle, "EL", "QG", NULL, NULL);
-    zmq_bind (handle, "EG", "QL", NULL, NULL);
+    assert (rc != -1);
+
+    rc = zmq_bind (handle, "EL", "QG", NULL, NULL);
+    assert (rc != -1);
+
+    rc = zmq_bind (handle, "EG", "QL", NULL, NULL);
+    assert (rc != -1);
 
     /*  Create message data to send.  */
     out_buf = malloc (message_size);
