@@ -69,14 +69,17 @@ int main (int argc, char *argv [])
     zmq::api_thread_t *api = zmq::api_thread_t::create (&dispatcher, &locator);
 
     //  Create local queue.
-    api->create_queue (q_name);
+    int rc = api->create_queue (q_name);
+    assert (rc != -1);
 
     //  Bind local queue to global exchange.
-    api->bind (ex_local_name, q_name, worker, worker, to_local_interface); 
+    rc = api->bind (ex_local_name, q_name, worker, worker, to_local_interface); 
+    assert (rc != -1);
 
     //  Create remote_exchange
     int ex_id = api->create_exchange (ex_remote_name, zmq::scope_global, 
         network, worker, 1, &worker);
+    assert (ex_id != -1);
 
     zmq::message_t message;
 

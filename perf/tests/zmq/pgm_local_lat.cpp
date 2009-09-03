@@ -82,17 +82,20 @@ int main (int argc, char *argv [])
     //  Create global uplink exchange.
     int ex_id = api->create_exchange (ex_local_name, zmq::scope_global, 
         network, worker, 1, &worker);
+    assert (ex_id != -1);
 
     cout << "Start pgm_remote_lat on remote host and "
         "press enter to continue." << endl;
-    
+
     getchar (); 
 
     //  Create local queue.
-    api->create_queue (q_name);
+    int rc = api->create_queue (q_name);
+    assert (rc != -1);
 
     //  Bind local queue to global exchange.
-    api->bind (ex_remote_name, q_name, worker, worker, to_remote_iface); 
+    rc = api->bind (ex_remote_name, q_name, worker, worker, to_remote_iface); 
+    assert (rc != -1);
 
     //  Sleep 1s to create pgm infrastructure and send IGMP packets.
 #ifdef ZMQ_HAVE_WINDOWS
@@ -107,7 +110,7 @@ int main (int argc, char *argv [])
     for (int i = 0; i < msg_count; i++) {
         zmq::message_t message_out (msg_size);
         api->send (ex_id, message_out);
-
+        
         zmq::message_t message_in;
         api->receive (&message_in);
 
