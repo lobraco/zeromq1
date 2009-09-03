@@ -353,7 +353,7 @@ int main (int argc, char *argv [])
             }
 
             //  If everything is OK, move to next socket.
-            if (!rc)
+            if (rc != -1)
                 continue;
 error:
 #ifdef ZMQ_TRACE
