@@ -318,7 +318,9 @@ int main (int argc, char *argv [])
 
             continue;
         }
-      
+
+        int nbytes = 0;
+
         //  Traverse all the sockets.
         for (socket_list_t::size_type pos = 0; pos < socket_list.size ();
               pos ++) {
@@ -330,30 +332,32 @@ int main (int argc, char *argv [])
             if (FD_ISSET (s, &error_set_fds))
                 goto error;
 
-	    if (FD_ISSET (s, &result_set_fds)) {
-           
-                //  Read command ID.
-                unsigned char cmd;
+            //  If no event on this socket continue.
+            if (!FD_ISSET (s, &result_set_fds)) {
+                continue;
+            }
 
-                int nbytes = socket_list [pos]->read (&cmd, 1);
-                if (nbytes != 1)
-                    goto error;
+            //  Read command ID.
+            unsigned char cmd;
 
-                //  Process individual commands.
-                switch (cmd) {
-                case create_id:
-                    rc = register_object (socket_list [pos]);
-                    break;
-                case get_id:
-                    rc = query_object (socket_list [pos]);
-                    break;
-                default:
-                    goto error;
-                }
+            nbytes = socket_list [pos]->read (&cmd, 1);
+            if (nbytes != 1)
+                goto error;
+
+            //  Process individual commands.
+            switch (cmd) {
+            case create_id:
+                rc = register_object (socket_list [pos]);
+                break;
+            case get_id:
+                rc = query_object (socket_list [pos]);
+                break;
+            default:
+                goto error;
             }
 
             //  If everything is OK, move to next socket.
-            if (rc != -1)
+            if (!rc)
                 continue;
 error:
 #ifdef ZMQ_TRACE
