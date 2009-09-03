@@ -60,7 +60,7 @@ EXTRA_DIST = \
     $(top_srcdir)/libclrzmq/zmq.cs \
     $(top_srcdir)/librbzmq/extconf.rb \
     $(top_srcdir)/mono/clrzmq/clrzmq/zmq_strong_name.snk \
-    $(top_srcdir)/third-party/openpgm/libpgm-1.0.0rc8.tar.bz2
+    $(top_srcdir)/third-party/openpgm/libpgm-1.2.14.tar.bz2
 
 dist-hook:
-		-rm -rf $(distdir)/third-party/openpgm/libpgm-1.0.0
+		-rm -rf $(distdir)/third-party/openpgm/libpgm-1.2.14

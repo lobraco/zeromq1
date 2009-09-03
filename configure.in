@@ -649,23 +649,23 @@ if test "x$with_pgm_ext" != "xno"; then
     fi
 
     #  Unpack libpgm-1.0.0rc8.tar.bz2
-    AC_MSG_CHECKING([Unpacking libpgm-1.0.0rc8.tar.bz2])
+    AC_MSG_CHECKING([Unpacking libpgm-1.2.14.tar.bz2])
 
-    if tar -xjf third-party/openpgm/libpgm-1.0.0rc8.tar.bz2 -C third-party/openpgm/; then
+    if tar -xjf third-party/openpgm/libpgm-1.2.14.tar.bz2 -C third-party/openpgm/; then
         AC_MSG_RESULT([yes])
     else
-        AC_MSG_ERROR([Could not unpack third-paty/openpgm/libpgm-1.0.0rc7.tar.bz2 file])
+        AC_MSG_ERROR([Could not unpack third-paty/openpgm/libpgm-1.2.14.tar.bz2 file])
     fi
 
     #  Generate galois_tables.c
     AC_CONFIG_COMMANDS([galois_tables.c], 
-        [perl third-party/openpgm/libpgm-1.0.0/openpgm/pgm/galois_generator.pl > \
-            third-party/openpgm/libpgm-1.0.0/openpgm/pgm/galois_tables.c])
+        [perl third-party/openpgm/libpgm-1.2.14/openpgm/pgm/galois_generator.pl > \
+            third-party/openpgm/libpgm-1.2.14/openpgm/pgm/galois_tables.c])
 
     #  Generate version.c
     AC_CONFIG_COMMANDS([version.c],
-        [python third-party/openpgm/libpgm-1.0.0/openpgm/pgm/version_generator.py > \
-            third-party/openpgm/libpgm-1.0.0/openpgm/pgm/version.c])
+        [python third-party/openpgm/libpgm-1.2.14/openpgm/pgm/version_generator.py > \
+            third-party/openpgm/libpgm-1.2.14/openpgm/pgm/version.c])
 
     #  Check for OpenPGM nedded libraries.
     PKG_CHECK_MODULES([GLIB], [glib-2.0 gthread-2.0])

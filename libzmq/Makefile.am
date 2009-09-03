@@ -81,20 +81,20 @@ pkginclude_HEADERS = \
 lib_LTLIBRARIES = libzmq.la
 
 if BUILD_PGM
-pgm_sources = ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/packet.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/timer.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/if.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/gsi.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/signal.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/txwi.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/rxwi.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/transport.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/rate_control.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/async.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/checksum.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/reed_solomon.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/version.c \
-    ../third-party/openpgm/libpgm-1.0.0/openpgm/pgm/galois_tables.c
+pgm_sources = ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/packet.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/timer.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/if.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/gsi.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/signal.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/txwi.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/rxwi.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/transport.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/rate_control.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/async.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/checksum.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/reed_solomon.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/version.c \
+    ../third-party/openpgm/libpgm-1.2.14/openpgm/pgm/galois_tables.c
 endif
 
 libzmq_la_SOURCES = $(pkginclude_HEADERS) $(pgm_sources) \
@@ -142,8 +142,8 @@ libzmq_la_SOURCES = $(pkginclude_HEADERS) $(pgm_sources) \
 libzmq_la_LDFLAGS = -version-info @LTVER@ @LIBZMQ_EXTRA_LDFLAFS@
 
 if BUILD_PGM
-libzmq_la_CXXFLAGS = -I$(top_srcdir)/third-party/openpgm/libpgm-1.0.0/openpgm/pgm/include/ -Wall @LIBZMQ_EXTRA_CXXFLAGS@
-libzmq_la_CFLAGS = -I$(top_srcdir)/third-party/openpgm/libpgm-1.0.0/openpgm/pgm/include/ @LIBZMQ_EXTRA_CXXFLAGS@ \
+libzmq_la_CXXFLAGS = -I$(top_srcdir)/third-party/openpgm/libpgm-1.2.14/openpgm/pgm/include/ -Wall @LIBZMQ_EXTRA_CXXFLAGS@
+libzmq_la_CFLAGS = -I$(top_srcdir)/third-party/openpgm/libpgm-1.2.14/openpgm/pgm/include/ @LIBZMQ_EXTRA_CXXFLAGS@ \
     -pipe \
     -Wall \
     -Wextra \
