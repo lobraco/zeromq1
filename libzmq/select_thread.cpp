@@ -37,6 +37,7 @@
 #include <zmq/err.hpp>
 #include <zmq/select_thread.hpp>
 #include <zmq/fd.hpp>
+#include <zmq/handle.hpp>
 
 zmq::select_t::select_t () :
     maxfd (retired_fd),
@@ -61,15 +62,14 @@ zmq::handle_t zmq::select_t::add_fd (fd_t fd_, i_pollable *engine_)
     if (fd_ > maxfd)
         maxfd = fd_;
 
-    handle_t handle;
-    handle.fd = fd_;
+    handle_t handle (fd_);
     return handle;
 }
 
 void zmq::select_t::rm_fd (handle_t handle_)
 {
     //  Get file descriptor.
-    fd_t fd = handle_.fd;
+    fd_t fd = handle_.fd ();
 
     //  Stop polling on the descriptor.
     FD_CLR (fd, &source_set_in);
@@ -102,22 +102,22 @@ void zmq::select_t::rm_fd (handle_t handle_)
 
 void zmq::select_t::set_pollin (handle_t handle_)
 {
-    FD_SET (handle_.fd, &source_set_in);
+    FD_SET (handle_.fd (), &source_set_in);
 }
 
 void zmq::select_t::reset_pollin (handle_t handle_)
 {
-    FD_CLR (handle_.fd, &source_set_in);
+    FD_CLR (handle_.fd (), &source_set_in);
 }
 
 void zmq::select_t::set_pollout (handle_t handle_)
 {
-    FD_SET (handle_.fd, &source_set_out);
+    FD_SET (handle_.fd (), &source_set_out);
 }
 
 void zmq::select_t::reset_pollout (handle_t handle_)
 {
-    FD_CLR (handle_.fd, &source_set_out);
+    FD_CLR (handle_.fd (), &source_set_out);
 }
 
 bool zmq::select_t::process_events (poller_t <select_t> *poller_, bool timers_)
@@ -171,8 +171,8 @@ bool zmq::select_t::process_events (poller_t <select_t> *poller_, bool timers_)
         if (fds [i].fd == retired_fd)
             continue;
 
-        //  Store actual fd into handle union.
-        handle.fd = fds [i].fd;
+        //  Store actual fd into handle class.
+        handle.fd (fds [i].fd);
 
         if (FD_ISSET (fds [i].fd, &writefds))
             if (poller_->process_event (handle, fds [i].engine, event_out))

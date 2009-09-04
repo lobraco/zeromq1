@@ -35,6 +35,7 @@
 #include <zmq/config.hpp>
 #include <zmq/devpoll_thread.hpp>
 #include <zmq/fd.hpp>
+#include <zmq/handle.hpp>
 
 zmq::devpoll_t::devpoll_t ()
 {
@@ -77,21 +78,20 @@ zmq::handle_t zmq::devpoll_t::add_fd (fd_t fd_, i_pollable *engine_)
 
     devpoll_ctl (fd_, 0);
 
-    handle_t handle;
-    handle.fd = fd_;
+    handle_t handle (fd_);
     return handle;
 }
 
 void zmq::devpoll_t::rm_fd (handle_t handle_)
 {
-    assert (fd_table [handle_.fd].in_use);
-    devpoll_ctl (handle_.fd, POLLREMOVE);
-    fd_table [handle_.fd].in_use = false;
+    assert (fd_table [handle_.fd ()].in_use);
+    devpoll_ctl (handle_.fd (), POLLREMOVE);
+    fd_table [handle_.fd ()].in_use = false;
 }
 
 void zmq::devpoll_t::set_pollin (handle_t handle_)
 {
-    fd_t fd = handle_.fd;
+    fd_t fd = handle_.fd ();
     devpoll_ctl (fd, POLLREMOVE);
     fd_table [fd].events |= POLLIN;
     devpoll_ctl (fd, fd_table [fd].events);
@@ -99,7 +99,7 @@ void zmq::devpoll_t::set_pollin (handle_t handle_)
 
 void zmq::devpoll_t::reset_pollin (handle_t handle_)
 {
-    fd_t fd = handle_.fd;
+    fd_t fd = handle_.fd ();
     devpoll_ctl (fd, POLLREMOVE);
     fd_table [fd].events &= ~((short) POLLIN);
     devpoll_ctl (fd, fd_table [fd].events);
@@ -107,7 +107,7 @@ void zmq::devpoll_t::reset_pollin (handle_t handle_)
 
 void zmq::devpoll_t::set_pollout (handle_t handle_)
 {
-    fd_t fd = handle_.fd;
+    fd_t fd = handle_.fd ();
     devpoll_ctl (fd, POLLREMOVE);
     fd_table [fd].events |= POLLOUT;
     devpoll_ctl (fd, fd_table [fd].events);
@@ -115,7 +115,7 @@ void zmq::devpoll_t::set_pollout (handle_t handle_)
 
 void zmq::devpoll_t::reset_pollout (handle_t handle_)
 {
-    fd_t fd = handle_.fd;
+    fd_t fd = handle_.fd ();
     devpoll_ctl (fd, POLLREMOVE);
     fd_table [fd].events &= ~((short) POLLOUT);
     devpoll_ctl (fd, fd_table [fd].events);
@@ -166,8 +166,8 @@ bool zmq::devpoll_t::process_events (poller_t <devpoll_t> *poller_, bool timers_
         if (!fd_table [fd].in_use || !fd_table [fd].adopted)
             continue;
 
-        //  Store actual fd into handle union.
-        handle.fd = ev_buf [i].fd;
+        //  Store actual fd into handle class.
+        handle.fd (ev_buf [i].fd);
 
         if (ev_buf [i].revents & (POLLERR | POLLHUP))
             if (poller_->process_event (handle, engine, event_err))

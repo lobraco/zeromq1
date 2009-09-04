@@ -76,7 +76,8 @@ pkginclude_HEADERS = \
     ./zmq/i_amqp.hpp \
     ./zmq/engine_base.hpp \
     ./zmq/xmlParser.hpp \
-    ./zmq/data_dam.hpp
+    ./zmq/data_dam.hpp \
+    ./zmq/handle.hpp
 
 lib_LTLIBRARIES = libzmq.la
 

@@ -56,43 +56,42 @@ zmq::handle_t zmq::poll_t::add_fd (fd_t fd_, i_pollable *engine_)
     fd_table [fd_].index = pollset.size() - 1;
     fd_table [fd_].engine = engine_;
 
-    handle_t handle;
-    handle.fd = fd_;
+    handle_t handle (fd_);
     return handle;
 }
 
 void zmq::poll_t::rm_fd (handle_t handle_)
 {
-    fd_t index = fd_table [handle_.fd].index;
+    fd_t index = fd_table [handle_.fd ()].index;
     assert (index != retired_fd);
 
     //  Mark the fd as unused.
     pollset [index].fd = retired_fd;
-    fd_table [handle_.fd].index = retired_fd;
+    fd_table [handle_.fd ()].index = retired_fd;
     retired = true;
 }
 
 void zmq::poll_t::set_pollin (handle_t handle_)
 {
-    int index = fd_table [handle_.fd].index;
+    int index = fd_table [handle_.fd ()].index;
     pollset [index].events |= POLLIN;
 }
 
 void zmq::poll_t::reset_pollin (handle_t handle_)
 {
-    int index = fd_table [handle_.fd].index;
+    int index = fd_table [handle_.fd ()].index;
     pollset [index].events &= ~((short) POLLIN);
 }
 
 void zmq::poll_t::set_pollout (handle_t handle_)
 {
-    int index = fd_table [handle_.fd].index;
+    int index = fd_table [handle_.fd ()].index;
     pollset [index].events |= POLLOUT;
 }
 
 void zmq::poll_t::reset_pollout (handle_t handle_)
 {
-    int index = fd_table [handle_.fd].index;
+    int index = fd_table [handle_.fd ()].index;
     pollset [index].events &= ~((short) POLLOUT);
 }
 
@@ -127,8 +126,8 @@ bool zmq::poll_t::process_events (poller_t <poll_t> *poller_, bool timers_)
         if (pollset [i].fd == retired_fd)
            continue;
 
-        //  Store actual fd into handle union.
-        handle.fd = pollset [i].fd;
+        //  Store actual fd into handle class
+        handle.fd (pollset [i].fd);
 
         if (pollset [i].revents & (POLLERR | POLLHUP))
             if (poller_->process_event (handle, engine, event_err))

@@ -29,6 +29,7 @@
 
 #include <zmq/poller.hpp>
 #include <zmq/fd.hpp>
+#include <zmq/handle.hpp>
 
 namespace zmq
 {

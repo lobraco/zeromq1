@@ -21,16 +21,11 @@
 #define __ZMQ_I_POLLER_HPP_INCLUDED__
 
 #include <zmq/fd.hpp>
+#include <zmq/handle.hpp>
 #include <zmq/i_thread.hpp>
 
 namespace zmq
 {
-
-    union handle_t
-    {
-        fd_t fd;
-        void *ptr;
-    };
 
     //  Virtual interface to be exposed by file-descriptor-oriented engines
     //  for communication with I/O threads.

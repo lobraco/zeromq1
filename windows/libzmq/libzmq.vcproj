@@ -454,6 +454,10 @@
 				RelativePath="..\..\libzmq\zmq\formatting.hpp"
 				>
 			</File>
+ 			<File
+				RelativePath="..\..\libzmq\zmq\handle.hpp"
+				>
+			</File> 
 			<File
 				RelativePath="..\..\libzmq\zmq\i_amqp.hpp"
 				>

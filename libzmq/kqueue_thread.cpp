@@ -72,14 +72,13 @@ zmq::handle_t zmq::kqueue_t::add_fd (fd_t fd_, i_pollable *engine_)
     pe->flag_pollout = 0;
     pe->engine = engine_;
 
-    handle_t handle;
-    handle.ptr = pe;
+    handle_t handle (pe);
     return handle;
 }
 
 void zmq::kqueue_t::rm_fd (handle_t handle_)
 {
-    poll_entry_t *pe = (poll_entry_t*) handle_.ptr;
+    poll_entry_t *pe = (poll_entry_t*) handle_.ptr ();
     if (pe->flag_pollin)
         kevent_delete (pe->fd, EVFILT_READ);
     if (pe->flag_pollout)
@@ -90,28 +89,28 @@ void zmq::kqueue_t::rm_fd (handle_t handle_)
 
 void zmq::kqueue_t::set_pollin (handle_t handle_)
 {
-    poll_entry_t *pe = (poll_entry_t*) handle_.ptr;
+    poll_entry_t *pe = (poll_entry_t*) handle_.ptr ();
     pe->flag_pollin = true;
     kevent_add (pe->fd, EVFILT_READ, pe);
 }
 
 void zmq::kqueue_t::reset_pollin (handle_t handle_)
 {
-    poll_entry_t *pe = (poll_entry_t*) handle_.ptr;
+    poll_entry_t *pe = (poll_entry_t*) handle_.ptr ();
     pe->flag_pollin = false;
     kevent_delete (pe->fd, EVFILT_READ);
 }
 
 void zmq::kqueue_t::set_pollout (handle_t handle_)
 {
-    poll_entry_t *pe = (poll_entry_t*) handle_.ptr;
+    poll_entry_t *pe = (poll_entry_t*) handle_.ptr ();
     pe->flag_pollout = true;
     kevent_add (pe->fd, EVFILT_WRITE, pe);
 }
 
 void zmq::kqueue_t::reset_pollout (handle_t handle_)
 {
-    poll_entry_t *pe = (poll_entry_t*) handle_.ptr;
+    poll_entry_t *pe = (poll_entry_t*) handle_.ptr ();
     pe->flag_pollout = false;
     kevent_delete (pe->fd, EVFILT_WRITE);
 }
@@ -150,8 +149,8 @@ bool zmq::kqueue_t::process_events (poller_t <kqueue_t> *poller_, bool timers_)
         if (pe->fd == retired_fd)
             continue;
 
-        //  Store actual ptr into handle union.
-        handle.ptr = pe;
+        //  Store actual ptr into handle class.
+        handle.ptr (pe);
 
         if (ev_buf [i].flags & EV_EOF)
             if (poller_->process_event (handle, pe->engine, event_err))
