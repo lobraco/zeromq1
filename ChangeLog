@@ -1,4 +1,25 @@
+Version 1.0.1
+
+ZMQ-289  Return -1 from bind when remote object is not registered in zmq_server
+ZMQ-288  Return -1 from create_exchange /queue when object can not be created
+ZMQ-287  Disabling receiving messages from queue
+ZMQ-286  create handle_t class with == and != operators
+ZMQ-285  multiple listeners listening on the same machine with UDP encap.
+ZMQ-284  mask function inaccessible via Java on Windows
+ZMQ-283  Lua binding for 0MQ
+ZMQ-282  Cannot send message containing zero byte via Ruby
+ZMQ-281  Publisher restart fails on PGM and Win/Linux
+ZMQ-280  Broken build using MSVC 2005
+ZMQ-278  Load-balancing exchange doesn't load balance
+ZMQ-277  TCL binding
+ZMQ-276  Check for pkg-config in autogen.sh script
+ZMQ-275  Check for eventfd by running test program during ./configure
+ZMQ-274  can not compile estimate_cpu_freq with PERF_CPU_FREQUENCY set
+ZMQ-273  gcc (GCC) 4.4.0: invalid conversion from const char* to char*
+ZMQ-272  make sure message content is created properly
+
 Version 1.0.0
+
 ZMQ-271  Build OpenPGM with 0MQ build system
 ZMQ-270  0MQ windows pgm support
 ZMQ-269  Constness is better for the zmq_send data_ argument
