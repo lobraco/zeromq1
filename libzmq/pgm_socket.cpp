@@ -290,7 +290,11 @@ void zmq::pgm_socket_t::open_transport (void)
             G_N_ELEMENTS(spm_heartbeat));
         assert (rc == 0);
     }
-    
+
+    //  Enable multicast loopback.
+    rc = pgm_transport_set_multicast_loop (g_transport, true);
+    assert (rc == 0);
+
     //  Bind a transport to the specified network devices.
     rc = pgm_transport_bind (g_transport);
     assert (rc == 0);
