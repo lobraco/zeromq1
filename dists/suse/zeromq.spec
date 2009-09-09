@@ -25,12 +25,12 @@
 
 Name: zeromq
 Summary: ZeroMQ is a thin messaging implementation
-%define major_version 0
-Version: 0.6
+%define major_version 1
+Version: 1.0.1
 Release: 1
 Group: Development/Libraries
 License: GPL/LGPL
-Source0: %{name}-svn-current.tar.bz2
+Source0: %{name}-git-current.tar.bz2
 Source1: %{name}.Key.snk.bz2
 URL: http://www.zeromq.org
 BuildRequires: gcc-c++
@@ -65,6 +65,7 @@ BuildRequires:  mono mono-devel
 BuildRequires: lksctp-tools-devel
 %if 0%{?with_mono} == 1
 BuildRequires:  mono-core mono-devel
+BuildRequires:  glib2-devel
 %endif
 %endif
 BuildRoot: %{_tmppath}/%{name}-%{version}-buildroot
@@ -162,7 +163,7 @@ use ZeroMQ in Mono.
 
 %prep
 
-%setup -n %{name}
+%setup -n %{name}1
 [ ! -e %SOURCE1 ] || bunzip2 -c < %SOURCE1 > mono/clrzmq/clrzmq/zmq_strong_name.snk
 
 %build
@@ -179,7 +180,7 @@ use ZeroMQ in Mono.
 %if 0%{?with_mono} == 1
 	--with-clr --with-clrdir=%{_prefix}/lib/clrzmq \
 %endif
-	--with-sctp --with-amqp
+	--with-sctp --with-pgm --with-amqp
 
 %{?make:%make}%{!?make:%__make %{?jobs:-j%jobs} IMPORT_CPPFLAGS+="$RPM_OPT_FLAGS"} \
 %if 0%{?with_java} == 1
@@ -200,9 +201,7 @@ mkdir %{buildroot}
 mkdir -p %buildroot%{_javadir}
 cp libjzmq/Zmq.jar %buildroot%{_javadir}
 %endif
-mkdir -p %buildroot%{_datadir}/pkgconfig
 %if 0%{?with_mono} == 1
-cp mono/clrzmq/clrzmq/*.pc %buildroot%{_datadir}/pkgconfig/
 gacutil -i %buildroot%{_prefix}/lib/clrzmq/libclrzmq.dll -f -root %buildroot%{_prefix}/lib -package clrzmq
 %endif
 
@@ -243,6 +242,7 @@ gacutil -i %buildroot%{_prefix}/lib/clrzmq/libclrzmq.dll -f -root %buildroot%{_p
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/*.la
+%{_libdir}/pkgconfig/*
 %attr(644,root,man) %{_mandir}/man3/*
 
 %files -n python-%{name}
@@ -274,4 +274,5 @@ gacutil -i %buildroot%{_prefix}/lib/clrzmq/libclrzmq.dll -f -root %buildroot%{_p
 %changelog
 * Wed Feb 11 2009 Dirk O. Siebnich <dok@dok-net.net>
 - Packaged for RPM
+
 
