@@ -173,7 +173,10 @@ PyObject *pyZMQ_send (pyZMQ *self, PyObject *args, PyObject *kwdict)
     
     zmq::message_t message (PyString_Size (py_message));
     memcpy (message.data (), PyString_AsString (py_message), message.size ());
+
+    Py_BEGIN_ALLOW_THREADS
     sent = self->api_thread->send (exchange, message, block);
+    Py_END_ALLOW_THREADS
 
     return PyInt_FromLong (sent ? 1 : 0);
 }
@@ -188,7 +191,11 @@ PyObject *pyZMQ_receive (pyZMQ *self, PyObject *args, PyObject *kwdict)
           &block))
         return NULL;
 
-    int queue = self->api_thread->receive (&message, block);
+    int queue;
+    Py_BEGIN_ALLOW_THREADS
+    queue = self->api_thread->receive (&message, block);
+    Py_END_ALLOW_THREADS
+
     return Py_BuildValue ("is#i", queue, (char*) message.data (),
         message.size (), message.type ());
 }
