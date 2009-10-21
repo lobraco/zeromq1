@@ -95,9 +95,9 @@ namespace zmq
         //  can process in one go.
         max_io_events = 256,
 
-        //  High and low watermark for backend protocol engines.
-        bp_hwm = 10000,
-        bp_lwm = 5000,
+        //  Default high and low watermark for backend protocol engines.
+        default_bp_hwm = 10000,
+        default_bp_lwm = 5000,
 
         //  Due to unimplemented "explicit EOR" mechanism in Linux kernel
         //  implementation of SCTP we are not able to send SCTP messages

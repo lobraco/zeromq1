@@ -37,12 +37,14 @@ namespace zmq
             const char *location_, int handler_thread_count_,
             i_thread **handler_threads_, bool source_,
             i_thread *peer_thread_, i_engine *peer_engine_,
-            const char *peer_name_);
+            const char *peer_name_, int64_t bp_hwm_, int64_t bp_lwm_);
 
         static i_engine *create_engine (
             i_thread *calling_thread_, i_thread *thread_,
             const char *location_, const char *local_object_,
-            bool load_balancing_, const char *engine_options_);
+            bool load_balancing_, const char *engine_options_,
+            int64_t bp_hwm_, int64_t bp_lwm_);
+
     };
 
 }

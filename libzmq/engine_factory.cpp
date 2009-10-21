@@ -34,7 +34,7 @@ zmq::i_engine *zmq::engine_factory_t::create_listener (
     i_thread *calling_thread_, i_thread *thread_, const char *location_,
     int handler_thread_count_, i_thread **handler_threads_,
     bool source_, i_thread *peer_thread_, i_engine *peer_engine_,
-    const char *peer_name_)
+    const char *peer_name_, int64_t bp_hwm_, int64_t bp_lwm_)
 {
     std::string transport_type;
     std::string transport_args;
@@ -52,17 +52,18 @@ zmq::i_engine *zmq::engine_factory_t::create_listener (
     }
 
     if (transport_type == "zmq.tcp") {
-        i_engine *engine = new bp_tcp_listener_t (calling_thread_, thread_,
-            transport_args.c_str (), handler_thread_count_, handler_threads_,
-            source_, peer_thread_, peer_engine_, peer_name_);
+        bp_tcp_listener_t *engine = new bp_tcp_listener_t (calling_thread_,
+            thread_, transport_args.c_str (), handler_thread_count_,
+            handler_threads_, source_, peer_thread_, peer_engine_, peer_name_);
         assert (engine);
+        engine->set_watermarks (bp_hwm_, bp_lwm_);
         return engine;
     }
 
 #if (defined ZMQ_HAVE_OPENPGM ||\
     (defined ZMQ_HAVE_WINDOWS && !defined ZMQ_HAVE_MINGW32))
     if (transport_type == "zmq.pgm") {
-        i_engine *engine = new bp_pgm_sender_t (calling_thread_, thread_,
+        bp_pgm_sender_t *engine = new bp_pgm_sender_t (calling_thread_, thread_,
             transport_args.c_str (), peer_thread_, peer_engine_);
         assert (engine);
         return engine;
@@ -71,7 +72,7 @@ zmq::i_engine *zmq::engine_factory_t::create_listener (
 
 #if defined ZMQ_HAVE_SCTP
     if (transport_type == "sctp") {
-        i_engine *engine = new sctp_listener_t (calling_thread_, thread_,
+        sctp_listener_t *engine = new sctp_listener_t (calling_thread_, thread_,
             transport_args.c_str (), handler_thread_count_, handler_threads_,
             source_, peer_thread_, peer_engine_, peer_name_);
         assert (engine);
@@ -86,7 +87,7 @@ zmq::i_engine *zmq::engine_factory_t::create_listener (
 zmq::i_engine *zmq::engine_factory_t::create_engine (
     i_thread *calling_thread_, i_thread *thread_, const char *location_,
     const char *local_object_, bool load_balancing_,
-    const char *engine_options_)
+    const char *engine_options_, int64_t bp_hwm_, int64_t bp_lwm_)
 {
     //  Decompose the string to the transport name (e.g. "zmq.tcp") and
     //  transport arguments (e.g. "eth0:5555").
@@ -108,17 +109,18 @@ zmq::i_engine *zmq::engine_factory_t::create_engine (
     //  Create appropriate engine.
 
     if (transport_type == "zmq.tcp") {
-        i_engine *engine = new bp_tcp_engine_t (calling_thread_, thread_,
+        bp_tcp_engine_t *engine = new bp_tcp_engine_t (calling_thread_, thread_,
             transport_args.c_str (), local_object_, load_balancing_,
             engine_options_);
         assert (engine);
+        engine->set_watermarks (bp_hwm_, bp_lwm_);
         return engine;
     }
 
 #if (defined ZMQ_HAVE_OPENPGM ||\
     (defined ZMQ_HAVE_WINDOWS && !defined ZMQ_HAVE_MINGW32))
     if (transport_type == "zmq.pgm") {
-        i_engine *engine = new bp_pgm_receiver_t (calling_thread_,
+        bp_pgm_receiver_t *engine = new bp_pgm_receiver_t (calling_thread_,
             thread_, transport_args.c_str (), pgm_in_batch_size,
             engine_options_);
         assert (engine);
@@ -128,7 +130,7 @@ zmq::i_engine *zmq::engine_factory_t::create_engine (
 
 #if defined ZMQ_HAVE_SCTP
     if (transport_type == "sctp") {
-        i_engine *engine = new sctp_engine_t (calling_thread_, thread_,
+        sctp_engine_t *engine = new sctp_engine_t (calling_thread_, thread_,
             transport_args.c_str (), local_object_, load_balancing_,
             engine_options_);
         assert (engine);
@@ -138,7 +140,7 @@ zmq::i_engine *zmq::engine_factory_t::create_engine (
 
 #if defined ZMQ_HAVE_AMQP
     if (transport_type == "amqp") {
-        i_engine *engine = new amqp_client_t (calling_thread_,
+        amqp_client_t *engine = new amqp_client_t (calling_thread_,
             thread_, transport_args.c_str (), local_object_, load_balancing_,
             engine_options_);
         assert (engine);

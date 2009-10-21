@@ -91,6 +91,7 @@ void zmq::bp_tcp_listener_t::in_event (handle_t handle_)
     bp_tcp_engine_t *engine = new bp_tcp_engine_t (poller,
         handler_threads [current_handler_thread], fd, peer_name);
     assert (engine);
+    engine->set_watermarks (bp_hwm, bp_lwm);
 
     if (source) {
 

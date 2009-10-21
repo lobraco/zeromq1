@@ -103,7 +103,7 @@ bool zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
     bool source_, const char *object_, i_thread *thread_,
     i_engine *engine_, scope_t scope_, const char *location_,
     i_thread *listener_thread_, int handler_thread_count_,
-    i_thread **handler_threads_)
+    i_thread **handler_threads_, int64_t bp_hwm_, int64_t bp_lwm_)
 {
     assert (strlen (object_) < 256);
 
@@ -136,7 +136,7 @@ bool zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
         i_engine *listener = engine_factory_t::create_listener (
             calling_thread_, listener_thread_, location_,
             handler_thread_count_, handler_threads_,
-            source_, thread_, engine_, object_);
+            source_, thread_, engine_, object_, bp_hwm_, bp_lwm_);
 
         if (!listener) {
             sync.unlock ();
@@ -169,7 +169,7 @@ bool zmq::dispatcher_t::create (i_locator *locator_, i_thread *calling_thread_,
 bool zmq::dispatcher_t::get (i_locator *locator_, i_thread *calling_thread_,
     const char *object_, i_thread **thread_, i_engine **engine_,
     i_thread *handler_thread_, const char *local_object_,
-    const char *engine_arguments_)
+    const char *engine_arguments_, int64_t bp_hwm_, int64_t bp_lwm_)
 {
     assert (strlen (object_) < 256);
 
@@ -204,7 +204,7 @@ bool zmq::dispatcher_t::get (i_locator *locator_, i_thread *calling_thread_,
         //  Create the proxy engine for the object.
         i_engine *engine = engine_factory_t::create_engine (calling_thread_,
             handler_thread_, location, local_object_, load_balancing,
-            engine_arguments_);
+            engine_arguments_, bp_hwm_, bp_lwm_);
 
         if (!engine) {
             sync.unlock ();

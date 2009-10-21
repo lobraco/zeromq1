@@ -38,7 +38,9 @@ zmq::api_thread_t::api_thread_t (dispatcher_t *dispatcher_,
     dispatcher (dispatcher_),
     locator (locator_),
     current_queue (0),
-    message_mask (message_data)
+    message_mask (message_data),
+    bp_hwm (default_bp_hwm),
+    bp_lwm (default_bp_lwm)
 {
 #if defined ZMQ_HAVE_RDTSC_IN_API_THREAD
     last_command_time = 0;
@@ -55,6 +57,12 @@ zmq::api_thread_t::~api_thread_t ()
 void zmq::api_thread_t::mask (uint32_t notifications_)
 {
     message_mask = notifications_ | message_data;
+}
+
+void zmq::api_thread_t::set_watermarks (int64_t bp_hwm_, int64_t bp_lwm_)
+{
+    bp_hwm = bp_hwm_;
+    bp_lwm = bp_lwm_;
 }
 
 int zmq::api_thread_t::create_exchange (const char *name_,
@@ -85,7 +93,7 @@ int zmq::api_thread_t::create_exchange (const char *name_,
     //  Register the exchange with the locator.
     if (!dispatcher->create (locator, this, false, name_, this, engine,
           scope_, location_, listener_thread_,
-          handler_thread_count_, handler_threads_))
+          handler_thread_count_, handler_threads_, bp_hwm, bp_lwm))
         return -1;
 
     return exchanges.size () - 1;
@@ -121,7 +129,7 @@ int zmq::api_thread_t::create_queue (const char *name_, scope_t scope_,
     //  Register the queue with the locator.
     if (!dispatcher->create (locator, this, true, name_, this, engine,
           scope_, location_, listener_thread_, handler_thread_count_,
-          handler_threads_))
+          handler_threads_, bp_hwm, bp_lwm))
         return -1;
 
     return queues.size ();
@@ -150,7 +158,8 @@ int zmq::api_thread_t::bind (const char *exchange_name_,
         exchange_engine = eit->second;
     } else {
         if (!dispatcher->get (locator, this, exchange_name_, &exchange_thread,
-              &exchange_engine, exchange_thread_, queue_name_, exchange_options_))
+              &exchange_engine, exchange_thread_, queue_name_,
+              exchange_options_, bp_hwm,bp_lwm))
             return -1;
     }
 
@@ -166,7 +175,8 @@ int zmq::api_thread_t::bind (const char *exchange_name_,
         queue_engine = qit->engine;
     } else {
         if (!dispatcher->get (locator, this, queue_name_, &queue_thread,
-              &queue_engine, queue_thread_, exchange_name_, queue_options_))
+              &queue_engine, queue_thread_, exchange_name_, queue_options_,
+              bp_hwm,bp_lwm))
             return -1;
     }
 

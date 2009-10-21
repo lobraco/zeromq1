@@ -35,7 +35,9 @@ namespace zmq
     {
     protected:
 
-        engine_base_t (bool load_balancing_ = false)
+        engine_base_t (bool load_balancing_ = false) :
+            bp_hwm (default_bp_hwm),
+            bp_lwm (default_bp_lwm)
         {
             if (load_balancing_)
                 demux = new load_balancer_t ();
@@ -104,9 +106,19 @@ namespace zmq
         mux_t mux;
         i_demux *demux;
 
+        //  High and low watermarks for backend protocols
+        int64_t bp_hwm;
+        int64_t bp_lwm;
+
     public:
 
-        bool load_balancing ()
+        inline void set_watermarks(int64_t bp_hwm_, int64_t bp_lwm_)
+        {
+            bp_hwm = bp_hwm_;
+            bp_lwm = bp_lwm_;
+        }
+
+        inline bool load_balancing ()
         {
             return demux->load_balancing ();
         }

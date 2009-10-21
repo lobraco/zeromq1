@@ -79,6 +79,9 @@ namespace zmq
         //  By default only data are received. 
         ZMQ_EXPORT void mask (uint32_t notifications_);
 
+        //  Allows user to specify watermarks for backend protocols.
+        ZMQ_EXPORT void set_watermarks (int64_t bp_hwm_, int64_t bp_lwm_);
+
         //  Creates new exchange, returns exchange ID.
         ZMQ_EXPORT int create_exchange (
             const char *name_, scope_t scope_ = scope_local,
@@ -202,6 +205,10 @@ namespace zmq
         //  available only on x86 platforms.
         uint64_t last_command_time; 
 #endif
+
+        // High and low watermarks for backend protocols
+        int64_t bp_hwm;
+        int64_t bp_lwm;
 
         api_thread_t (const api_thread_t&);
         void operator = (const api_thread_t&);
